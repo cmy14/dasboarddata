@@ -4,9 +4,12 @@ import {
   Model,
   Table,
   PrimaryKey,
+  DataType,
 } from 'sequelize-typescript';
 
-@Table
+@Table({
+  tableName: 'articles', // Remplacez par le nom de votre table dans la base de données
+})
 export class ArticleModel extends Model {
   @AutoIncrement
   @PrimaryKey
@@ -16,7 +19,10 @@ export class ArticleModel extends Model {
   @Column
   name: string;
 
-  @Column
+  @Column({
+    type: DataType.INTEGER, // Remplacez DataType par le type de votre colonne
+    // allowNull: false,
+  })
   price: number;
 
   @Column({ defaultValue: true })

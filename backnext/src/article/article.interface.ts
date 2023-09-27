@@ -1,1 +1,6 @@
-export interface Article {}
+export interface Article {
+  id: number;
+  name: string;
+  price: number;
+  isActive?: boolean;
+}

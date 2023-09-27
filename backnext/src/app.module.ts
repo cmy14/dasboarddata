@@ -17,7 +17,7 @@ import { ArticleModel } from './article/article.model/article.model';
       username: 'dev',
       password: 'dev',
       database: 'dev',
-      // models: [ArticleModel],
+      models: [ArticleModel],
       autoLoadModels: true,
       synchronize: true,
     }),

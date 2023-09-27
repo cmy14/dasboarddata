@@ -4,13 +4,15 @@ import { InjectModel } from '@nestjs/sequelize';
 import { UpdateArticleDto } from './dto/update-article.dto/update-article.dto';
 import { CreateArticleDto } from './dto/create-article.dto/create-article.dto';
 import { ArticleMapper } from './article.mapper/article.mapper';
+
 @Injectable()
 export class ArticleService {
   constructor(
     @InjectModel(ArticleModel)
-    private readonly articleModel: typeof ArticleModel,
-    private readonly articleMapper: ArticleMapper,
+    private  articleModel: typeof ArticleModel,
+    private  articleMapper: ArticleMapper,
   ) {}
+
   async create(createArticleDto: CreateArticleDto): Promise<ArticleModel> {
     const article = this.articleMapper.toEntity(createArticleDto);
     return article.save();
@@ -28,14 +30,27 @@ export class ArticleService {
     return article;
   }
 
-  async update(updateArticleDto: UpdateArticleDto): Promise<ArticleModel> {
-    const article = await this.findOne(updateArticleDto.id);
-    Object.assign(article, updateArticleDto); // Mettez à jour les propriétés de l'article
-    return article.save();
+  async update(
+    id: number,
+    updateArticleDto: UpdateArticleDto,
+  ): Promise<ArticleModel> {
+    const [updatedRowCount, updatedArticles] = await this.articleModel.update(
+      updateArticleDto,
+      {
+        where: { id },
+        returning: true,
+      },
+    );
+    if (updatedRowCount === 0) {
+      throw new NotFoundException(`Article with id ${id} not found.`);
+    }
+    return updatedArticles[0];
   }
 
   async remove(id: number): Promise<void> {
-    const article = await this.findOne(id);
-    await article.destroy();
+    const deletedRowCount = await this.articleModel.destroy({ where: { id } });
+    if (deletedRowCount === 0) {
+      throw new NotFoundException(`Article with id ${id} not found.`);
+    }
   }
 }
